@@ -120,3 +120,108 @@ $ rails generate controller StaticPages home help --no-test-framework
        create      app/assets/stylesheets/static_pages.css.scss
 ```
 
+Generate the failing tests
+
+```console
+$ rails generate integration_test static_pages
+      invoke  rspec
+      create    spec/requests/static_pages_spec.rb
+```
+
+Describe the test `spec/requests/static_pages_spec.rb`
+
+```ruby
+describe "Home page" do
+
+  it "should have the content 'Sample App'" do
+    visit '/static_pages/home'
+    page.should have_content('Sample App')
+  end
+end
+```
+
+Run the test
+
+```console
+$ bundle exec rspec spec/requests/static_pages_spec.rb
+Rack::File headers parameter replaces cache_control after Rack 1.5.
+F
+
+Failures:
+     
+  1) Static pages Home page should have the content 'Sample App'
+     Failure/Error: page.should have_content('Sample App')
+       expected there to be content "Sample App" in "RailsClass\n\nStaticPages#home\nFind me in app/views/static_pages/home.html.erb\n\n\n"
+     # ./spec/requests/static_pages_spec.rb:9:in `block (3 levels) in <top (required)>'
+
+Finished in 0.2724 seconds
+1 example, 1 failure
+
+Failed examples:
+
+rspec ./spec/requests/static_pages_spec.rb:7 # Static pages Home page should have the content 'Sample App'
+
+Randomized with seed 2144
+```
+
+To make the test pass edit `app/views/static_pages/home.html.erb`
+
+```html
+<h1>Sample App</h1>
+<p>
+  This is the home page for the
+  <a href="http://railstutorial.org/">Ruby on Rails Tutorial</a>
+  sample application.
+</p>
+```
+
+Run the test again
+
+```console
+$ bundle exec rspec spec/requests/static_pages_spec.rb
+Rack::File headers parameter replaces cache_control after Rack 1.5.
+.
+
+Finished in 0.16103 seconds
+1 example, 0 failures
+
+Randomized with seed 29743
+```
+
+Add tests for the help page on `spec/requests/static_pages_spec.rb`
+
+```ruby
+require 'spec_helper'
+
+describe "Static pages" do
+
+  describe "Home page" do
+
+    it "should have the content 'Sample App'" do
+      visit '/static_pages/home'
+      page.should have_content('Sample App')
+    end
+  end
+
+  describe "Help page" do
+
+    it "should have the content 'Help'" do
+      visit '/static_pages/help'
+      page.should have_content('Help')
+    end
+  end
+end
+```
+
+Make it pass editing `app/views/static_pages/help.html.erb`
+
+```html
+<h1>Help</h1>
+<p>
+  Get help on the Ruby on Rails Tutorial at the
+  <a href="http://railstutorial.org/help">Rails Tutorial help page</a>.
+  To get help on this sample app, see the
+  <a href="http://railstutorial.org/book">Rails Tutorial book</a>.
+</p>
+```
+
