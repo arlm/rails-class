@@ -225,3 +225,39 @@ Make it pass editing `app/views/static_pages/help.html.erb`
 </p>
 ```
 
+Add tests fro the About page on `spec/requests/static_pages_spec.rb`
+
+```ruby
+  describe "About page" do
+
+    it "should have the content 'About Us'" do
+      visit '/static_pages/about'
+      page.should have_content('About Us')
+    end
+  end
+```
+
+Add the new route on `config/routes.rb` 
+
+```ruby
+get "static_pages/about"
+```
+
+Add an About handler on the controller: `app/controllers/static_pages_controller.rb`
+
+```ruby
+  def about
+  end
+```
+
+Create a template for the About page: `app/views/static_pages/about.html.erb`
+
+```html
+<h1>About Us</h1>
+<p>
+  The <a href="http://railstutorial.org/">Ruby on Rails Tutorial</a>
+  is a project to make a book and screencasts to teach web development
+  with <a href="http://rubyonrails.org/">Ruby on Rails</a>. This
+  is the sample application for the tutorial.
+</p>
+```
