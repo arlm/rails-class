@@ -225,7 +225,7 @@ Make it pass editing `app/views/static_pages/help.html.erb`
 </p>
 ```
 
-Add tests fro the About page on `spec/requests/static_pages_spec.rb`
+Add tests from the About page on `spec/requests/static_pages_spec.rb`
 
 ```ruby
   describe "About page" do
@@ -260,4 +260,142 @@ Create a template for the About page: `app/views/static_pages/about.html.erb`
   with <a href="http://rubyonrails.org/">Ruby on Rails</a>. This
   is the sample application for the tutorial.
 </p>
+```
+
+Run your tests
+
+
+Add tests to validate the page titles on `spec/requests/static_pages_spec.rb`. It should be like:
+
+```ruby
+require 'spec_helper'
+
+describe "Static pages" do
+
+  describe "Home page" do
+
+    it "should have the content 'Sample App'" do
+      visit '/static_pages/home'
+      page.should have_content('Sample App')
+    end
+	
+    it "should have the right title 'Home'" do
+      visit '/static_pages/home'
+      page.should have_selector('title', :text => " | Home")
+    end
+  end
+  
+  describe "Help page" do
+  
+    it "should have the content 'Help'" do
+      visit '/static_pages/help'
+      page.should have_content('Help')
+    end
+	
+    it "should have the right title 'Help'" do
+      visit '/static_pages/home'
+      page.should have_selector('title', :text => " | Help")
+    end
+  end
+  
+  describe "About page" do
+  
+    it "should have the content 'About Us'" do
+      visit '/static_pages/about'
+      page.should have_content('About Us')
+    end
+	
+    it "should have the right title 'About Us'" do
+      visit '/static_pages/home'
+      page.should have_selector('title', :text => " | About Us")
+    end
+  end
+  
+end
+```
+
+Run your tests:
+
+```console
+$ bundle exec rspec spec/requests/static_pages_spec.rb
+Rack::File headers parameter replaces cache_control after Rack 1.5.
+F.F.F.
+
+Failures:
+
+  1) Static pages About page should have the right title 'About Us'
+     Failure/Error: page.should have_selector('title', :text => " | About Us")
+       expected css "title" with text " | About Us" to return something
+     # ./spec/requests/static_pages_spec.rb:42:in `block (3 levels) in <top (required)>'
+
+  2) Static pages Home page should have the right title 'Home'
+     Failure/Error: page.should have_selector('title', :text => " | Home")
+       expected css "title" with text " | Home" to return something
+     # ./spec/requests/static_pages_spec.rb:14:in `block (3 levels) in <top (required)>'
+
+  3) Static pages Help page should have the right title 'Help'
+     Failure/Error: page.should have_selector('title', :text => " | Help")
+       expected css "title" with text " | Help" to return something
+     # ./spec/requests/static_pages_spec.rb:29:in `block (3 levels) in <top (required)>'
+
+Finished in 2.14 seconds
+6 examples, 3 failures
+
+Failed examples:
+
+rspec ./spec/requests/static_pages_spec.rb:40 # Static pages About page should have the right title 'About Us'
+rspec ./spec/requests/static_pages_spec.rb:12 # Static pages Home page should have the right title 'Home'
+rspec ./spec/requests/static_pages_spec.rb:27 # Static pages Help page should have the right title 'Help'
+
+Randomized with seed 22673
+```
+
+Make the application layout use a dynamic title by editing `app/views/layouts/application.html.erb`
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ruby on Rails Tutorial Sample App | <%= yield(:title) %></title>
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+<%= yield %>
+
+</body>
+</html>
+```
+
+Provide Home title on `app/views/static_pages/home.html.erb` by adding this as first line:
+
+```ruby
+<% provide(:title, 'Home') %>
+```
+
+Provide Home title on `app/views/static_pages/help.html.erb` by adding this as first line:
+
+```ruby
+<% provide(:title, 'Help') %>
+```
+
+Provide Home title on `app/views/static_pages/about.html.erb` by adding this as first line:
+
+```ruby
+<% provide(:title, 'About') %>
+```
+
+Run your tests
+
+```console
+$ bundle exec rspec spec/requests/static_pages_spec.rb
+Rack::File headers parameter replaces cache_control after Rack 1.5.
+......
+
+Finished in 2.09 seconds
+6 examples, 0 failures
+
+Randomized with seed 36738
 ```
