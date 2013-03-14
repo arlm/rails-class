@@ -399,3 +399,39 @@ Finished in 2.09 seconds
 
 Randomized with seed 36738
 ```
+
+Add tests for the contact page on `spec/requests/static_pages_spec.rb`
+
+```ruby
+  describe "Contact page" do
+
+    it "should have the h1 'Contact'" do
+      visit '/static_pages/contact'
+      page.should have_selector('h1', :text => 'Contact')
+    end
+
+    it "should have the title 'Contact'" do
+      visit '/static_pages/contact'
+      page.should have_selector('title',
+                        :text => " | Contact")
+    end
+  end
+```
+
+Create a contact page `app/views/static_pages/contact.html.erb`
+
+```html
+<% provide(:title, 'Contact') %>
+<h1>Contact</h1>
+<p>
+  Contact Ruby on Rails Tutorial about the sample app at the
+  <a href="http://railstutorial.org/contact">contact page</a>.
+</p>
+```
+
+Add a route for the new page on `config/routes.rb` 
+
+```ruby
+get "static_pages/contact"
+```
+
