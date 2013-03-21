@@ -551,3 +551,63 @@ $ bundle exec guard init rspec
 13:32:53 - INFO - rspec guard added to Guardfile, feel free to edit it
 
 ```
+
+Add our tests to `Guardfile` and make it stop on errors
+
+```ruby
+require 'active_support/core_ext'
+
+guard 'rspec', :version => 2, :all_after_pass => false do
+.
+.
+.
+watch(%r{^app/controllers/(.+)_(controller)\.rb$})  { |m| ["spec/routing/#{m[1]}_routing_spec.rb", "spec/#{m[2]}s/#{m[1]}_#{m[2]}_spec.rb", "spec/acceptance/#{m[1]}_spec.rb", (m[1][/_pages/] ? "spec/requests/#{m[1]}_spec.rb" :  "spec/requests/#{m[1].singularize}_pages_spec.rb")] }
+.
+.
+.
+# Capybara request specs
+  watch(%r{^app/views/(.+)/.*\.(erb|haml)$})          { |m| (m[1][/_pages/] ? "spec/requests/#{m[1]}_spec.rb" :  "spec/requests/#{m[1].singularize}_pages_spec.rb") }
+  
+.
+.
+.
+end
+```
+
+The line
+
+```ruby
+guard 'rspec', :version => 2, :all_after_pass => false do
+```
+
+ensures that Guard doesn't run all the tests after a failing test
+
+Make a new directory called `spec/routing`
+
+```console
+mkdir spec/routing
+```
+
+Now run guard and type `quit` to exit
+
+```console
+$ bundle exec guard
+10:12:33 - INFO - Guard uses TerminalTitle to send notifications.
+10:12:33 - INFO - Guard::RSpec is running, with RSpec 2!
+10:12:33 - INFO - Running all specs
+Rack::File headers parameter replaces cache_control after Rack 1.5.
+........
+
+Finished in 3.23 seconds
+8 examples, 0 failures
+
+
+Randomized with seed 5067
+
+10:14:05 - INFO - Guard is now watching at '/cygdrive/c/Users/Alexandre/dev/projects/rails-class/rails_class'
+[Listen warning]:
+  Listen will be polling changes. Learn more at https://github.com/guard/listen#polling-fallback.
+
+[1] guard(main)> quit
+10:15:58 - INFO - Bye bye...
+```
