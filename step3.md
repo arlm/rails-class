@@ -547,7 +547,7 @@ Create Guard files
 
 ```console
 $ bundle exec guard init rspec
-13:32:53 - INFO - Writing new Guardfile to /cygdrive/c/Users/Alexandre/dev/projects/rails-class/rails_class/Guardfile
+13:32:53 - INFO - Writing new Guardfile to /Users/Alexandre/dev/projects/rails-class/rails_class/Guardfile
 13:32:53 - INFO - rspec guard added to Guardfile, feel free to edit it
 
 ```
@@ -604,10 +604,241 @@ Finished in 3.23 seconds
 
 Randomized with seed 5067
 
-10:14:05 - INFO - Guard is now watching at '/cygdrive/c/Users/Alexandre/dev/projects/rails-class/rails_class'
+10:14:05 - INFO - Guard is now watching at '/Users/Alexandre/dev/projects/rails-class/rails_class'
 [Listen warning]:
   Listen will be polling changes. Learn more at https://github.com/guard/listen#polling-fallback.
 
 [1] guard(main)> quit
 10:15:58 - INFO - Bye bye...
 ```
+
+### Speeding up the tests
+
+On `Gemfile` add:
+
+```ruby
+group :test do
+  gem 'capybara', '1.1.2'
+  gem 'minitest'
+  
+  gem 'guard-spork', '1.2.0'
+  gem 'childprocess', '0.3.6'
+  gem 'spork', '0.9.2'  
+end
+```
+Update your bundle
+
+```console
+$ bundle install
+Fetching gem metadata from https://rubygems.org/.........
+Fetching gem metadata from https://rubygems.org/..
+Using rake (10.0.3) 
+Using i18n (0.6.4) 
+Using multi_json (1.6.1) 
+Using activesupport (3.2.12) 
+Using builder (3.0.4) 
+Using activemodel (3.2.12) 
+Using erubis (2.7.0) 
+Using journey (1.0.4) 
+Using rack (1.4.5) 
+Using rack-cache (1.2) 
+Using rack-test (0.6.2) 
+Using hike (1.2.1) 
+Using tilt (1.3.5) 
+Using sprockets (2.2.2) 
+Using actionpack (3.2.12) 
+Using mime-types (1.21) 
+Using polyglot (0.3.3) 
+Using treetop (1.4.12) 
+Using mail (2.4.4) 
+Using actionmailer (3.2.12) 
+Using arel (3.0.2) 
+Using tzinfo (0.3.37) 
+Using activerecord (3.2.12) 
+Using activeresource (3.2.12) 
+Using bundler (1.2.3) 
+Using nokogiri (1.5.6) 
+Installing ffi (1.9.0) with native extensions 
+Installing childprocess (0.3.6) 
+Using rubyzip (0.9.9) 
+Using websocket (1.0.7) 
+Using selenium-webdriver (2.31.0) 
+Using xpath (0.1.4) 
+Using capybara (1.1.2) 
+Using coderay (1.0.9) 
+Using coffee-script-source (1.6.1) 
+Using execjs (1.4.0) 
+Using coffee-script (2.2.0) 
+Using rack-ssl (1.3.3) 
+Using json (1.7.7) 
+Using rdoc (3.12.2) 
+Using thor (0.17.0) 
+Using railties (3.2.12) 
+Using coffee-rails (3.2.2) 
+Using diff-lcs (1.1.3) 
+Using growl (1.0.3) 
+Using listen (0.7.3) 
+Using lumberjack (1.0.2) 
+Using method_source (0.8.1) 
+Using slop (3.4.4) 
+Using pry (0.9.12) 
+Using terminal-table (1.4.5) 
+Using guard (1.6.2) 
+Using guard-rspec (1.2.1) 
+Installing spork (0.9.2) 
+Installing sys-proctable (0.9.3) with native extensions 
+Installing guard-spork (1.2.0) 
+Using jquery-rails (2.2.1) 
+Using minitest (4.6.2) 
+Using rails (3.2.12) 
+Using rb-fsevent (0.9.1) 
+Using rspec-core (2.11.1) 
+Using rspec-expectations (2.11.3) 
+Using rspec-mocks (2.11.3) 
+Using rspec (2.11.0) 
+Using rspec-rails (2.11.0) 
+Using sass (3.2.7) 
+Using sass-rails (3.2.6) 
+Using sqlite3 (1.3.7) 
+Using uglifier (1.3.0) 
+Your bundle is updated! Use `bundle show [gemname]` to see where a bundled gem is installed.
+```
+
+Bootstrap the `Spork` configuration
+
+```console
+$ bundle exec spork --bootstrap
+Using RSpec
+Bootstrapping /Users/alexandre/git/rails-class/rails_class/spec/spec_helper.rb.
+Done. Edit /Users/alexandre/git/rails-class/rails_class/spec/spec_helper.rb now with your favorite text editor and follow the instructions.
+```
+
+ Adding environment loading to the Spork.prefork block on `spec/spec_helper.rb`
+
+```ruby
+require 'rubygems'
+require 'spork'
+
+Spork.prefork do
+  # Loading more in this block will cause your tests to run faster. However,
+  # if you change any configuration or code from libraries loaded here, you'll
+  # need to restart spork for it take effect.
+  # This file is copied to spec/ when you run 'rails generate rspec:install'
+  ENV["RAILS_ENV"] ||= 'test'
+  require File.expand_path("../../config/environment", __FILE__)
+  require 'rspec/rails'
+  require 'rspec/autorun'
+
+  # Requires supporting ruby files with custom matchers and macros, etc,
+  # in spec/support/ and its subdirectories.
+  Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
+
+  RSpec.configure do |config|
+    # == Mock Framework
+    #
+    # If you prefer to use mocha, flexmock or RR, uncomment the appropriate line:
+    #
+    # config.mock_with :mocha
+    # config.mock_with :flexmock
+    # config.mock_with :rr
+    config.mock_with :rspec
+
+    # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
+    config.fixture_path = "#{::Rails.root}/spec/fixtures"
+
+    # If you're not using ActiveRecord, or you'd prefer not to run each of your
+    # examples within a transaction, remove the following line or assign false
+    # instead of true.
+    config.use_transactional_fixtures = true
+
+    # If true, the base class of anonymous controllers will be inferred
+    # automatically. This will be the default behavior in future versions of
+    # rspec-rails.
+    config.infer_base_class_for_anonymous_controllers = false
+  end
+end
+```
+
+Measure the running time without spork
+
+```console
+$ time bundle exec rspec spec/requests/static_pages_spec.rb 
+Rack::File headers parameter replaces cache_control after Rack 1.5.
+........
+
+Finished in 0.20388 seconds
+8 examples, 0 failures
+
+Randomized with seed 6878
+
+
+real	0m2.928s
+user	0m2.608s
+sys	0m0.308s
+```
+
+Now run spork
+
+```console
+$ bundle exec spork
+Using RSpec
+Preloading Rails environment
+Loading Spork.prefork block...
+Rack::File headers parameter replaces cache_control after Rack 1.5.
+Spork is ready and listening on 8989!
+```
+Measure the running time with spork
+
+```console
+$ time bundle exec rspec spec/requests/static_pages_spec.rb --drb
+........
+
+Finished in 0.248 seconds
+8 examples, 0 failures
+
+Randomized with seed 24797
+
+
+real	0m0.997s
+user	0m0.618s
+sys	0m0.055s
+```
+
+On `.rspec` configure RSpec to use spork
+
+```bash
+--colour
+--drb
+```
+
+Configure guard to use spork
+
+```console
+$ bundle exec guard init spork
+23:06:40 - INFO - spork guard added to Guardfile, feel free to edit it
+```
+
+Configue guard to run RSpec using spork
+
+```ruby
+require 'active_support/core_ext'
+
+guard 'spork', :rspec_env => { 'RAILS_ENV' => 'test' } do
+  watch('config/application.rb')
+  watch('config/environment.rb')
+  watch(%r{^config/environments/.+\.rb$})
+  watch(%r{^config/initializers/.+\.rb$})
+  watch('Gemfile')
+  watch('Gemfile.lock')
+  watch('spec/spec_helper.rb')
+  watch('test/test_helper.rb')
+  watch('spec/support/')
+end
+
+guard 'rspec', :version => 2, :all_after_pass => false, :cli => '--drb' do
+  .
+  .
+  .
+end
+```
+
