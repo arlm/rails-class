@@ -322,3 +322,78 @@ Create a footer partial as `app/views/layouts/_footer.html.erb`
 </footer>
 ```
 
+### Add a Contact page
+
+Add tests for it on `spec/requests/static_pages_spec.rb`
+
+```ruby
+require 'spec_helper'
+
+describe "Static pages" do
+  .
+  .
+  .
+  describe "Contact page" do
+
+    it "should have the h1 'Contact'" do
+      visit '/static_pages/contact'
+      page.should have_selector('h1', text: 'Contact')
+    end
+
+    it "should have the title 'Contact'" do
+      visit '/static_pages/contact'
+      page.should have_selector('title',
+                    text: "Ruby on Rails Tutorial Sample App | Contact")
+    end
+  end
+end
+```
+
+### Styling links
+
+Change links from
+
+```ruby
+<a href="/static_pages/about">About</a>
+```
+to
+
+```ruby
+<%= link_to "About", about_path %>
+```
+
+As is shown here:
+
+|Page    | URI       | Named route  |
+|--------|-----------|--------------|
+|Home    |	/	     | root_path    |
+|About   |	/about   | about_path   |
+|Help    |	/help    | help_path    |
+|Contact |	/contact | contact_path |
+|Sign up |	/signup  | signup_path  |
+|Sign in |	/signin  | signin_path  |
+
+Update the RSpec tests on `spec/requests/static_pages_spec.rb`
+
+```ruby
+require 'spec_helper'
+
+describe "Static pages" do
+  .
+  .
+  .
+  describe "Contact page" do
+
+    it "should have the h1 'Contact'" do
+      visit '/contact'
+      page.should have_selector('h1', text: 'Contact')
+    end
+
+    it "should have the title 'Contact'" do
+      visit '/contact'
+      page.should have_selector('title',
+                    text: "Ruby on Rails Tutorial Sample App | Contact")
+    end
+  end
+end
+```
