@@ -379,21 +379,87 @@ Update the RSpec tests on `spec/requests/static_pages_spec.rb`
 require 'spec_helper'
 
 describe "Static pages" do
-  .
-  .
-  .
+  
+    describe "Home page" do
+  
+      it "should have the h1 'Sample App'" do
+        visit root_path
+        page.should have_selector('h1', text: 'Sample App')
+      end
+  
+      it "should have the base title" do
+        visit root_path
+        page.should have_selector('title', text: "Ruby on Rails Tutorial Sample App")
+      end
+  
+      it "should not have a custom page title" do
+        visit root_path
+        page.should_not have_selector('title', text: '| Home')
+      end
+    end
+  
+  describe "Help page" do
+  
+    it "should have the content 'Help'" do
+      visit help_path
+      page.should have_content('Help')
+    end
+	
+    it "should have the right title 'Help'" do
+      visit help_path
+      page.should have_selector('title', text: " | Help")
+    end
+  end
+  
+  describe "About page" do
+  
+    it "should have the content 'About Us'" do
+      visit about_path
+      page.should have_content('About Us')
+    end
+	
+    it "should have the right title 'About Us'" do
+      visit about_path
+      page.should have_selector('title', text: " | About Us")
+    end
+  end
+  
   describe "Contact page" do
 
     it "should have the h1 'Contact'" do
-      visit '/contact'
+      visit contact_path
       page.should have_selector('h1', text: 'Contact')
     end
 
     it "should have the title 'Contact'" do
-      visit '/contact'
-      page.should have_selector('title',
-                    text: "Ruby on Rails Tutorial Sample App | Contact")
-    end
+      visit contact_path
+      page.should have_selector('title', text: " | Contact")
+    end 
   end
+  
 end
 ```
+
+Update the routes map on ``
+
+```ruby
+RailsClass::Application.routes.draw do
+  root to: 'static_pages#home'
+  
+  match '/signup',  to: 'users#new'
+  match '/signin',  to: 'users#new'
+  match '/signout',  to: 'users#new'
+  
+  match '/help',    to: 'static_pages#help'
+  match '/about',   to: 'static_pages#about'
+  match '/contact', to: 'static_pages#contact'
+  
+  .
+  .
+  .
+end
+```
+
+### Pretify RSpec
+
+
