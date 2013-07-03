@@ -463,3 +463,112 @@ end
 ### Pretify RSpec
 
 
+Simplify the RSpec file `spec/support/static_pages_spec.rb`
+
+```ruby
+ require 'spec_helper'
+
+describe "Static pages" do
+	subject { page }
+
+   describe "Home page" do
+      before { visit root_path }
+  
+      it { should have_selector('h1', text: 'Sample App') }
+      it { should have_selector('title', text: full_title('')) }
+    end
+  
+  describe "Help page" do
+	before { visit help_path }
+	
+    it { should have_selector('h1', text: 'Help') }
+    it { should have_selector('title', text: full_title('Help')) }
+  end
+  
+  describe "About page" do
+	before { visit about_path }
+  
+    it { should have_selector('h1', text: 'About Us') }
+    it { should have_selector('title', text: full_title('About Us')) }
+  end
+  
+  describe "Contact page" do
+	before { visit contact_path }
+	
+    it { should have_selector('h1', text: 'Contact') }
+    it { should have_selector('title', text: full_title('Contact')) }
+  end
+end
+```
+
+Create a RSpec help on `spec/support/utilities.rb`
+
+```ruby
+def full_title(page_title)
+  base_title = "Ruby on Rails Tutorial Sample App"
+  if page_title.empty?
+    base_title
+  else
+    "#{base_title} | #{page_title}"
+  end
+end
+```
+
+### User Signup
+
+Generate a Users Controller
+
+```console
+$ rails generate controller Users new --no-test-framework
+      create  app/controllers/users_controller.rb
+       route  get "users/new"
+      invoke  erb
+      create    app/views/users
+      create    app/views/users/new.html.erb
+      invoke  helper
+      create    app/helpers/users_helper.rb
+      invoke  assets
+      invoke    coffee
+      create      app/assets/javascripts/users.js.coffee
+      invoke    scss
+      create      app/assets/stylesheets/users.css.scss
+```
+
+Create User tests
+
+```console
+$ rails generate integration_test user_pages
+      invoke  rspec
+      create    spec/requests/user_pages_spec.rb
+```
+
+Update the tests on `spec/requests/user_pages_spec.rb`
+
+```ruby
+require 'spec_helper'
+
+describe "User pages" do
+
+  subject { page }
+
+  describe "signup page" do
+    before { visit signup_path }
+
+    it { should have_selector('h1',    text: 'Sign up') }
+    it { should have_selector('title', text: full_title('Sign up')) }
+  end
+end
+```
+
+Change the signup button on `app/views/static_pages/home.html.erb` from
+
+```ruby
+<%= link_to "Sign up now!", '#, class: "btn btn-large btn-primary" %>
+```
+
+to
+
+```ruby
+<%= link_to "Sign up now!", signup_path, class: "btn btn-large btn-primary" %>
+```
+
