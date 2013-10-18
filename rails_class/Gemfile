@@ -14,7 +14,7 @@ group :development, :test do
 end
 
 group :test do
-  gem 'capybara', '1.1.2'
+  gem 'capybara', '2.1.0'
   gem 'minitest'
   
   gem 'guard-spork', '1.2.0'
